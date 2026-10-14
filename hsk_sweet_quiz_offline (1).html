@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fff0f5">
+<title>🌸 HSK Sweet Quiz — Game tiếng Trung</title>
+<style>
+:root{--pink:#ff8eb5;--lav:#a99af7;--mint:#bcefe1;--yellow:#ffe7a3;--ink:#493e63;--muted:#857b99;--paper:#fffafd;--line:#f0e4f4;--good:#16835d;--bad:#c24e70}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(140deg,#fff0f6,#f2f0ff 52%,#eafaf6);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);min-height:100vh}
+main{max-width:1000px;margin:auto;padding:22px 15px 48px}header{text-align:center;padding:10px 0 18px}header .flower{font-size:2.2rem}h1{font-size:clamp(1.7rem,4vw,2.7rem);margin:3px 0 6px}header p{margin:0;color:var(--muted)}
+.panel{background:#ffffffd9;border:1px solid white;border-radius:24px;padding:clamp(14px,3vw,25px);box-shadow:0 12px 40px #7863a015;margin-bottom:16px}
+.row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+button,select,input,textarea{font:inherit;color:var(--ink);border:1px solid #e9dff1;border-radius:13px;background:white;padding:10px 13px}
+button{cursor:pointer;transition:.15s}button:hover{transform:translateY(-1px);filter:brightness(.99)}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #bdb2ff}
+.pill{background:#fff;border:2px solid transparent;border-radius:14px;font-weight:750}.pill.active{background:#eeeaff;border-color:var(--lav)}
+.primary{background:var(--pink);border-color:var(--pink);color:white;font-weight:750}.soft{background:#f3efff}.small{font-size:.9rem}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:17px 0}
+.stat{text-align:center;border:1px solid var(--line);border-radius:16px;padding:10px;background:#fff}.stat strong{display:block;font-size:1.35rem}.stat span{font-size:.8rem;color:var(--muted)}
+.progress{height:9px;border-radius:20px;background:#f0e8f5;overflow:hidden}.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--lav));transition:width .2s}
+.question{text-align:center;padding:22px 8px 12px}.tag{display:inline-block;background:#fff0f6;color:#b94b7c;padding:5px 11px;border-radius:99px;font-size:.82rem;font-weight:750}.hanzi{font-size:clamp(2.5rem,8vw,4.6rem);line-height:1.15;font-weight:800;margin:14px 0 7px}.pinyin{font-size:1.25rem;color:#7764c8;font-weight:700}.instruction{color:var(--muted);margin:9px 0 0}
+.answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px auto;max-width:720px}.answer{min-height:68px;text-align:left;display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #f0e6f4;border-radius:17px;padding:13px}.answer .letter{display:grid;place-items:center;flex:0 0 32px;height:32px;border-radius:10px;background:#f5f0ff;color:#7866c9;font-weight:800}.answer.correct{border-color:#8fdbbc;background:#edfff6}.answer.wrong{border-color:#ffb1c7;background:#fff1f5}.answer:disabled{cursor:default;transform:none}
+.feedback{text-align:center;min-height:28px;font-weight:700}.feedback.good{color:var(--good)}.feedback.bad{color:var(--bad)}
+.section-title{font-size:1.15rem;margin:0 0 8px}.muted{color:var(--muted);font-size:.9rem;line-height:1.55}.hidden{display:none!important}
+textarea{width:100%;min-height:155px;resize:vertical;font-family:ui-monospace,monospace;font-size:.88rem;line-height:1.5}.field{display:flex;flex-direction:column;gap:6px;margin:10px 0}.field label{font-weight:700;font-size:.9rem}.field input,.field select{width:100%}.editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.foot{text-align:center;font-size:.82rem;color:var(--muted);padding:3px 8px}
+details summary{cursor:pointer;font-weight:800;padding:4px 0 10px} .result-big{font-size:2rem;font-weight:850;text-align:center}.word-list{display:flex;flex-wrap:wrap;gap:8px}.word-chip{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:.88rem}
+@media(max-width:560px){main{padding:12px 10px 32px}.stats{grid-template-columns:repeat(2,1fr)}.answers{grid-template-columns:1fr;gap:9px}.answer{min-height:58px}.editor-grid{grid-template-columns:1fr}.panel{border-radius:19px}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="flower">🌸 🐰 🌷</div><h1>HSK Sweet Quiz</h1><p>Game trắc nghiệm tiếng Trung · HSK 1, HSK 2, HSK 3</p></header>
+<section class="panel">
+ <div class="row" id="levels">
+  <button class="pill active" data-level="1">🌱 HSK 1</button><button class="pill" data-level="2">🌷 HSK 2</button><button class="pill" data-level="3">🦋 HSK 3</button>
+  <button class="soft" id="shuffleBtn">🔀 Trộn câu</button><button class="soft" id="speakBtn">🔊 Nghe từ</button>
+ </div>
+ <div class="stats">
+  <div class="stat"><strong id="qCount">0/0</strong><span>Câu đã làm</span></div>
+  <div class="stat"><strong id="score">0</strong><span>Điểm</span></div>
+  <div class="stat"><strong id="streak">0</strong><span>Chuỗi đúng 🔥</span></div>
+  <div class="stat"><strong id="accuracy">—</strong><span>Độ chính xác</span></div>
+ </div>
+ <div class="progress"><div id="progressBar"></div></div>
+ <div id="quizArea">
+  <div class="question">
+   <span class="tag" id="questionTag">Chọn nghĩa đúng</span>
+   <div class="hanzi" id="hanzi">你好</div>
+   <div class="pinyin" id="pinyin">nǐ hǎo</div>
+   <p class="instruction" id="instruction">Từ này có nghĩa là gì?</p>
+  </div>
+  <div class="answers" id="answers"></div>
+  <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+  <div class="row"><button class="primary" id="nextBtn">Câu tiếp theo →</button><button id="restartBtn" class="soft">↻ Chơi lại</button></div>
+ </div>
+ <div id="resultArea" class="hidden">
+  <div class="result-big" id="resultEmoji">🎉</div><h2 style="text-align:center;margin:5px">Hoàn thành lượt chơi!</h2>
+  <p style="text-align:center" id="resultText"></p>
+  <div class="row"><button class="primary" id="againBtn">Chơi lượt mới</button><button class="soft" id="reviewBtn">Xem từ cần ôn</button></div>
+  <div id="reviewList" class="word-list" style="margin-top:15px"></div>
+ </div>
+</section>
+<section class="panel">
+ <details>
+  <summary>✏️ Tự nhập / chỉnh sửa từ vựng</summary>
+  <p class="muted">Mỗi dòng một từ theo định dạng <b>chữ Hán | pinyin | nghĩa tiếng Việt</b>. Ví dụ: 你好 | nǐ hǎo | xin chào. Dữ liệu bạn nhập được lưu trên trình duyệt này. Để chơi ngoại tuyến, hãy tải và mở tệp HTML; tính năng phát âm dùng giọng tiếng Trung nếu trình duyệt có sẵn.</p>
+  <div class="editor-grid">
+   <div class="field"><label for="editLevel">Cấp độ đang chỉnh sửa</label><select id="editLevel"><option value="1">HSK 1</option><option value="2">HSK 2</option><option value="3">HSK 3</option></select></div>
+   <div class="field"><label for="importMode">Cách lưu danh sách</label><select id="importMode"><option value="replace">Thay thế danh sách cấp độ này</option><option value="append">Thêm vào danh sách hiện có</option></select></div>
+  </div>
+  <div class="field"><label for="wordInput">Danh sách từ vựng</label><textarea id="wordInput" spellcheck="false" placeholder="你好 | nǐ hǎo | xin chào&#10;谢谢 | xièxie | cảm ơn"></textarea></div>
+  <div class="row" style="justify-content:flex-start"><button class="primary" id="saveWords">💾 Lưu từ vựng</button><button id="exportBtn" class="soft">⬇️ Xuất danh sách JSON</button><label class="soft" style="border-radius:13px;padding:10px 13px;cursor:pointer">⬆️ Nhập JSON <input id="importFile" type="file" accept=".json,application/json" style="display:none"></label></div>
+  <p id="editStatus" class="muted" role="status"></p>
+ </details>
+</section>
+<section class="panel">
+ <h2 class="section-title">💗 Tiến độ học tập</h2>
+ <p class="muted">Điểm, số câu đúng và lịch sử từ cần ôn được lưu trên trình duyệt của thiết bị này (localStorage). Không cần tạo tài khoản; dữ liệu không tự đồng bộ giữa các máy.</p>
+ <div class="stats">
+  <div class="stat"><strong id="totalPlayed">0</strong><span>Câu đã trả lời</span></div>
+  <div class="stat"><strong id="totalCorrect">0</strong><span>Câu đúng</span></div>
+  <div class="stat"><strong id="bestScore">0</strong><span>Điểm cao nhất</span></div>
+  <div class="stat"><strong id="savedWords">0</strong><span>Từ đã lưu riêng</span></div>
+ </div>
+ <div class="row"><button id="resetProgress" class="soft">Xóa tiến độ học</button></div>
+</section>
+<p class="foot">🌼 Bản mẫu học tập ngoại tuyến. Từ vựng minh họa; hãy đối chiếu danh sách HSK 3.0 theo giáo trình/nguồn chính thức bạn đang dùng.</p>
+</main>
+<script>
+const DEFAULTS={
+1:[
+["你","nǐ","bạn"],["我","wǒ","tôi"],["他","tā","anh ấy"],["好","hǎo","tốt; khỏe"],["是","shì","là"],["不","bù","không"],["人","rén","người"],["大","dà","to; lớn"],["小","xiǎo","nhỏ"],["水","shuǐ","nước"],["吃","chī","ăn"],["喝","hē","uống"],["家","jiā","nhà; gia đình"],["学校","xuéxiào","trường học"],["老师","lǎoshī","giáo viên"],["学生","xuésheng","học sinh"],["朋友","péngyou","bạn bè"],["谢谢","xièxie","cảm ơn"],["再见","zàijiàn","tạm biệt"],["请","qǐng","mời; xin"],["爱","ài","yêu; thích"],["书","shū","sách"],["去","qù","đi"],["来","lái","đến"]],
+2:[
+["觉得","juéde","cảm thấy"],["已经","yǐjīng","đã"],["一起","yìqǐ","cùng nhau"],["因为","yīnwèi","bởi vì"],["所以","suǒyǐ","cho nên"],["但是","dànshì","nhưng"],["时间","shíjiān","thời gian"],["问题","wèntí","câu hỏi; vấn đề"],["帮助","bāngzhù","giúp đỡ"],["准备","zhǔnbèi","chuẩn bị"],["开始","kāishǐ","bắt đầu"],["希望","xīwàng","hy vọng"],["可能","kěnéng","có thể"],["非常","fēicháng","vô cùng"],["比较","bǐjiào","khá; tương đối"],["运动","yùndòng","vận động; thể thao"],["生日","shēngrì","sinh nhật"],["天气","tiānqì","thời tiết"],["旅游","lǚyóu","du lịch"],["考试","kǎoshì","thi; kỳ thi"],["告诉","gàosu","nói cho biết"],["等","děng","đợi"],["找","zhǎo","tìm"],["让","ràng","để; khiến"]],
+3:[
+["习惯","xíguàn","thói quen; quen"],["发现","fāxiàn","phát hiện"],["认真","rènzhēn","nghiêm túc"],["容易","róngyì","dễ dàng"],["重要","zhòngyào","quan trọng"],["当然","dāngrán","đương nhiên"],["终于","zhōngyú","cuối cùng"],["以前","yǐqián","trước đây"],["以后","yǐhòu","sau này"],["如果","rúguǒ","nếu"],["虽然","suīrán","mặc dù"],["其实","qíshí","thật ra"],["需要","xūyào","cần"],["选择","xuǎnzé","lựa chọn"],["提高","tígāo","nâng cao"],["练习","liànxí","luyện tập"],["关心","guānxīn","quan tâm"],["注意","zhùyì","chú ý"],["解决","jiějué","giải quyết"],["参加","cānjiā","tham gia"],["环境","huánjìng","môi trường"],["文化","wénhuà","văn hóa"],["历史","lìshǐ","lịch sử"],["影响","yǐngxiǎng","ảnh hưởng"]]};
+const $=id=>document.getElementById(id);
+const STORE_WORDS="hskSweetQuiz.words.v1", STORE_PROGRESS="hskSweetQuiz.progress.v1";
+let custom=load(STORE_WORDS,{}), progress=load(STORE_PROGRESS,{played:0,correct:0,best:0,perLevel:{},missed:[]});
+let level=1, questions=[], index=0, score=0, streak=0, correctThis=0, answered=false, current=null, missedThis=[];
+function load(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}}
+function save(){try{localStorage.setItem(STORE_WORDS,JSON.stringify(custom));localStorage.setItem(STORE_PROGRESS,JSON.stringify(progress))}catch{}}
+function wordsFor(l){return Array.isArray(custom[l])&&custom[l].length?custom[l]:DEFAULTS[l]}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function makeQuestions(){
+ const pool=shuffle(wordsFor(level));
+ if(pool.length<4){$("feedback").textContent="Cần ít nhất 4 từ để tạo câu hỏi trắc nghiệm.";questions=[];return}
+ return pool.map(w=>({word:w,choices:shuffle([w,...shuffle(pool.filter(x=>x[0]!==w[0])).slice(0,3)]),type:"meaning"}));
+}
+function start(){
+ questions=makeQuestions()||[];index=0;score=0;streak=0;correctThis=0;answered=false;missedThis=[];
+ $("score").textContent=0;$("streak").textContent=0;$("feedback").textContent="";$("feedback").className="feedback";
+ $("quizArea").classList.remove("hidden");$("resultArea").classList.add("hidden");
+ if(questions.length)renderQuestion();updateProgress();
+}
+function renderQuestion(){
+ if(index>=questions.length){finish();return}
+ answered=false;current=questions[index];$("questionTag").textContent=`HSK ${level} · Câu ${index+1}`;
+ $("hanzi").textContent=current.word[0];$("pinyin").textContent=current.word[1];$("instruction").textContent="Từ này có nghĩa là gì?";
+ $("answers").innerHTML="";$("feedback").textContent="";$("feedback").className="feedback";
+ current.choices.forEach((w,i)=>{let b=document.createElement("button");b.className="answer";b.innerHTML=`<span class="letter">${"ABCD"[i]}</span><span>${escapeHtml(w[2])}</span>`;b.addEventListener("click",()=>choose(b,w));$("answers").appendChild(b)});
+ $("nextBtn").disabled=true;$("nextBtn").textContent=index===questions.length-1?"Xem kết quả":"Câu tiếp theo →";
+ updateProgress();
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function choose(btn,w){
+ if(answered)return;answered=true;const right=w[0]===current.word[0];
+ [...$("answers").children].forEach(b=>{b.disabled=true});
+ if(right){btn.classList.add("correct");score+=10;streak++;correctThis++;progress.correct++;$("feedback").textContent="Chính xác! +10 điểm 🌟";$("feedback").className="feedback good"}
+ else{btn.classList.add("wrong");streak=0;missedThis.push(current.word);progress.missed=[...new Map([...progress.missed,current.word].map(x=>[x[0],x])).values()].slice(-200);[...$("answers").children].forEach((b,i)=>{if(current.choices[i][0]===current.word[0])b.classList.add("correct")});$("feedback").textContent=`Chưa đúng. ${current.word[0]} (${current.word[1]}) nghĩa là “${current.word[2]}”.`;$("feedback").className="feedback bad"}
+ progress.played++;progress.best=Math.max(progress.best,score);progress.perLevel[level]=progress.perLevel[level]||{played:0,correct:0,score:0};progress.perLevel[level].played++;if(right)progress.perLevel[level].correct++;progress.perLevel[level].score=Math.max(progress.perLevel[level].score,score);
+ $("score").textContent=score;$("streak").textContent=streak;$("nextBtn").disabled=false;save();updateProgress();
+}
+function updateProgress(){
+ $("qCount").textContent=`${Math.min(index+(answered?1:0),questions.length)}/${questions.length}`;$("accuracy").textContent=(index+(answered?1:0))?Math.round(correctThis/Math.max(1,index+(answered?1:0))*100)+"%":"—";
+ $("progressBar").style.width=(questions.length?Math.min(100,(index+(answered?1:0))/questions.length*100):0)+"%";
+ $("totalPlayed").textContent=progress.played||0;$("totalCorrect").textContent=progress.correct||0;$("bestScore").textContent=progress.best||0;
+ $("savedWords").textContent=[1,2,3].reduce((n,l)=>n+(custom[l]?.length||0),0);
+}
+function next(){if(!answered)return;index++;renderQuestion()}
+function finish(){
+ $("quizArea").classList.add("hidden");$("resultArea").classList.remove("hidden");
+ let pct=questions.length?Math.round(correctThis/questions.length*100):0;
+ $("resultEmoji").textContent=pct>=80?"🏆":pct>=50?"🌸":"💪";
+ $("resultText").textContent=`Bạn đúng ${correctThis}/${questions.length} câu (${pct}%), đạt ${score} điểm.`;
+ $("reviewList").innerHTML="";$("reviewList").classList.add("hidden");
+ missedThis.forEach(w=>{let d=document.createElement("div");d.className="word-chip";d.textContent=`${w[0]} · ${w[1]} — ${w[2]}`;$("reviewList").appendChild(d)});
+ updateProgress();
+}
+function speak(){
+ if(!("speechSynthesis" in window)){alert("Trình duyệt này không hỗ trợ phát âm.");return}
+ const w=current?.word || wordsFor(level)[0];if(!w)return;
+ const u=new SpeechSynthesisUtterance(w[0]);u.lang="zh-CN";u.rate=.78;
+ const voices=speechSynthesis.getVoices();const zh=voices.find(v=>v.lang.toLowerCase().startsWith("zh"));if(zh)u.voice=zh;
+ speechSynthesis.cancel();speechSynthesis.speak(u);
+}
+document.querySelectorAll("[data-level]").forEach(b=>b.addEventListener("click",()=>{level=Number(b.dataset.level);document.querySelectorAll("[data-level]").forEach(x=>x.classList.toggle("active",x===b));$("editLevel").value=String(level);start()}));
+$("nextBtn").addEventListener("click",next);$("restartBtn").addEventListener("click",start);$("againBtn").addEventListener("click",start);$("shuffleBtn").addEventListener("click",start);$("speakBtn").addEventListener("click",speak);
+$("reviewBtn").addEventListener("click",()=>$("reviewList").classList.toggle("hidden"));
+$("editLevel").addEventListener("change",()=>{const l=$("editLevel").value;$("wordInput").value=wordsFor(l).map(w=>w.join(" | ")).join("\n")});
+$("saveWords").addEventListener("click",()=>{
+ const l=Number($("editLevel").value), parsed=[],bad=[];
+ $("wordInput").value.split(/\r?\n/).forEach((line,i)=>{if(!line.trim())return;const parts=line.split("|").map(s=>s.trim());if(parts.length<3||!parts[0]||!parts[1]||!parts[2])bad.push(i+1);else parsed.push(parts.slice(0,3))});
+ if(bad.length){$("editStatus").textContent="Lỗi định dạng ở dòng: "+bad.join(", ")+". Dùng chữ Hán | pinyin | nghĩa tiếng Việt.";return}
+ if(parsed.length<4){$("editStatus").textContent="Hãy nhập ít nhất 4 từ hợp lệ cho một lượt trắc nghiệm.";return}
+ const dedup=new Map();[...( $("importMode").value==="append"?wordsFor(l):[]),...parsed].forEach(w=>dedup.set(w[0],w));custom[l]=[...dedup.values()];save();$("editStatus").textContent=`Đã lưu ${custom[l].length} từ cho HSK ${l} trên trình duyệt này.`;if(level===l)start();updateProgress();
+});
+$("exportBtn").addEventListener("click",()=>{
+ const blob=new Blob([JSON.stringify(custom,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hsk-sweet-quiz-vocab.json";a.click();URL.revokeObjectURL(a.href);
+});
+$("importFile").addEventListener("change",async e=>{
+ const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!data||typeof data!=="object")throw Error();[1,2,3].forEach(l=>{if(Array.isArray(data[l]))custom[l]=data[l].filter(w=>Array.isArray(w)&&w.length>=3).map(w=>w.slice(0,3).map(String))});save();$("editStatus").textContent="Đã nhập JSON. Chọn cấp độ để xem danh sách."; $("editLevel").dispatchEvent(new Event("change"));updateProgress();if(custom[level]?.length>=4)start()}catch{$("editStatus").textContent="Không đọc được JSON. Hãy dùng tệp đã xuất từ game."}e.target.value="";
+});
+$("resetProgress").addEventListener("click",()=>{if(confirm("Bạn có chắc muốn xóa toàn bộ tiến độ và lịch sử ôn tập? Danh sách từ riêng sẽ được giữ lại.")){progress={played:0,correct:0,best:0,perLevel:{},missed:[]};save();updateProgress()}});
+$("editLevel").dispatchEvent(new Event("change"));start();updateProgress();
+</script>
+</body></html>
